@@ -1,0 +1,35 @@
+-include ../../../frameworks/base/packages/SystemUI/proguard_kotlin.flags
+
+-keepattributes Signature,*Annotation*,InnerClasses,EnclosingMethod
+
+# Plugin entry points, discovered by SystemUI through the manifest + @Requires annotation.
+-keep @com.android.systemui.plugins.annotations.Requires class * { *; }
+-keep class org.derpfest.clocks.**ClockProvider { *; }
+
+# The clock design model is populated by Gson through reflection: keep every field.
+-keep class org.derpfest.clocks.ClockDesign { *; }
+-keep class org.derpfest.clocks.ClockDesign$* { *; }
+-keep class org.derpfest.clocks.ClockFace { *; }
+-keep class org.derpfest.clocks.ClockFaceScaleInPicker { *; }
+-keep class org.derpfest.clocks.ClockLayer { *; }
+-keep class * implements org.derpfest.clocks.ClockLayer { *; }
+-keep class org.derpfest.clocks.TextStyle { *; }
+-keep class * implements org.derpfest.clocks.TextStyle { *; }
+-keep class org.derpfest.clocks.DigitalAlignment { *; }
+-keep class org.derpfest.clocks.DigitalMarginRatio { *; }
+-keep enum org.derpfest.clocks.** { *; }
+
+-keepclassmembers class org.derpfest.clocks.R$* { public static <fields>; }
+-keepclassmembers class org.derpfest.clocks.*.R$* { public static <fields>; }
+
+# Ensure we're keeping relevant parts of ConstraintSet (used by the face layouts).
+-keepclassmembers class androidx.constraintlayout.widget.ConstraintSet { public *; }
+-keepclassmembers class androidx.constraintlayout.widget.ConstraintSet$* { public *; }
+
+# If we don't keep these compose methods then R8 assumes null return values where it should
+# not, which can NPE at runtime (same rule as the AOSP sample clock).
+-keep !enum androidx.compose.**Scope { *; }
+-keep !enum androidx.compose.runtime.** {
+    *** startRestartGroup(...);
+    *** getApplier(...);
+}

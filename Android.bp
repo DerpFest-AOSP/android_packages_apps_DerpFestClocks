@@ -1,0 +1,69 @@
+// Copyright (C) 2026 DerpFest
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//
+// Open-source SystemUI lockscreen clock plugins. Each apk is a ClockProviderPlugin
+// (discovered via com.android.systemui.action.PLUGIN_CLOCK_PROVIDER). The rendering
+// engine (org.derpfest.clocks, engine/) is built on the AOSP plugin API
+// (SystemUIPluginLib) and clock helpers (SystemUIClocks-CommonLib).
+//
+// Plugins are platform-signed so they share SystemUI's signature and are granted the
+// signature-level com.android.systemui.permission.PLUGIN the plugin loader requires.
+
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+// Shared engine (no artwork), linked into each clock apk.
+android_library {
+    name: "DerpFestClocksEngine",
+    manifest: "engine/AndroidManifest.xml",
+    srcs: ["engine/src/**/*.kt"],
+    resource_dirs: ["engine/res"],
+    use_resource_processor: true,
+    libs: ["SystemUIPluginLib"],
+    static_libs: [
+        "SystemUIClocks-CommonLib",
+        "PlatformAnimationLib",
+        "PlatformComposeSceneTransitionLayout",
+        "androidx.compose.runtime_runtime",
+        "androidx.compose.ui_ui",
+        "androidx.compose.foundation_foundation-layout",
+        "androidx-constraintlayout_constraintlayout",
+        "androidx.core_core",
+        "gson",
+        "monet",
+    ],
+    kotlincflags: ["-Xjvm-default=all"],
+    min_sdk_version: "current",
+    platform_apis: true,
+    system_ext_specific: true,
+}
+
+java_defaults {
+    name: "DerpFestClocksAppDefaults",
+    use_resource_processor: true,
+    libs: ["SystemUIPluginLib"],
+    static_libs: ["DerpFestClocksEngine"],
+    kotlincflags: ["-Xjvm-default=all"],
+    min_sdk_version: "current",
+    platform_apis: true,
+    system_ext_specific: true,
+    privileged: true,
+    certificate: "platform",
+    // Dex shrinking only: the artwork is referenced by name from the JSON designs (via
+    // Resources.getIdentifier), which the resource shrinker cannot see.
+    optimize: {
+        enabled: true,
+        shrink_resources: false,
+        proguard_flags_files: ["proguard.flags"],
+    },
+}
