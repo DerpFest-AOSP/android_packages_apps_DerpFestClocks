@@ -12,7 +12,6 @@
 package org.derpfest.clocks
 
 import android.content.Context
-import android.graphics.Rect
 import android.icu.util.TimeZone
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +30,7 @@ import com.android.systemui.plugins.keyguard.ui.clocks.ClockPositionAnimationArg
 import com.android.systemui.plugins.keyguard.ui.clocks.ClockViewIds
 import com.android.systemui.plugins.keyguard.ui.clocks.ThemeConfig
 import com.android.systemui.plugins.keyguard.ui.clocks.TimeFormatKind
+import com.android.systemui.plugins.keyguard.VRect
 import java.util.Locale
 
 /** One digital hand (a digit, pair, full time or date) bound to a [SimpleDigitalClockView]. */
@@ -64,8 +64,6 @@ open class SimpleDigitalHandLayerController(
 
     override val events =
         object : ClockEvents {
-            override var isReactiveTouchInteractionEnabled = false
-
             override fun onTimeZoneChanged(timeZone: TimeZone) {
                 timespec.setTimeZone(timeZone)
                 refreshTime()
@@ -140,7 +138,7 @@ open class SimpleDigitalHandLayerController(
 
             override fun onThemeChanged(theme: ThemeConfig) = digitView.updateColors(assets, theme)
 
-            override fun onTargetRegionChanged(targetRegion: Rect?) {}
+            override fun onTargetRegionChanged(targetRegion: VRect) {}
 
             override fun onSecondaryDisplayChanged(onSecondaryDisplay: Boolean) {}
         }

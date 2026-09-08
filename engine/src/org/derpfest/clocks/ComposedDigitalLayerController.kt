@@ -12,7 +12,6 @@
 package org.derpfest.clocks
 
 import android.content.Context
-import android.graphics.Rect
 import android.icu.util.TimeZone
 import com.android.systemui.log.core.Logger
 import com.android.systemui.log.core.MessageBuffer
@@ -27,6 +26,7 @@ import com.android.systemui.plugins.keyguard.ui.clocks.ClockFaceEvents
 import com.android.systemui.plugins.keyguard.ui.clocks.ClockPositionAnimationArgs
 import com.android.systemui.plugins.keyguard.ui.clocks.ThemeConfig
 import com.android.systemui.plugins.keyguard.ui.clocks.TimeFormatKind
+import com.android.systemui.plugins.keyguard.VRect
 import java.util.Locale
 
 /** A custom [DigitalClockFaceView] hosting several digital hands. */
@@ -62,12 +62,6 @@ class ComposedDigitalLayerController(
 
     override val events =
         object : ClockEvents {
-            override var isReactiveTouchInteractionEnabled: Boolean
-                get() = view.isReactiveTouchInteractionEnabled
-                set(value) {
-                    view.isReactiveTouchInteractionEnabled = value
-                }
-
             override fun onTimeZoneChanged(timeZone: TimeZone) {
                 layerControllers.forEach { it.events.onTimeZoneChanged(timeZone) }
                 refreshTime()
@@ -123,7 +117,7 @@ class ComposedDigitalLayerController(
 
             override fun onFontSettingChanged(fontSizePx: Float) = view.onFontSettingChanged(fontSizePx)
 
-            override fun onTargetRegionChanged(targetRegion: Rect?) {}
+            override fun onTargetRegionChanged(targetRegion: VRect) {}
 
             override fun onSecondaryDisplayChanged(onSecondaryDisplay: Boolean) {}
         }

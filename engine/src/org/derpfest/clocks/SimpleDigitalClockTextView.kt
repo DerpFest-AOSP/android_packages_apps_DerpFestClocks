@@ -34,6 +34,7 @@ import com.android.systemui.customization.clocks.ClockLogger
 import com.android.systemui.log.core.MessageBuffer
 import com.android.systemui.plugins.keyguard.ui.clocks.ClockViewIds
 import com.android.systemui.plugins.keyguard.ui.clocks.ThemeConfig
+import com.android.systemui.plugins.keyguard.VMeasurePoint
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -175,7 +176,7 @@ open class SimpleDigitalClockTextView(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        getLogger().onMeasure(widthMeasureSpec, heightMeasureSpec)
+        getLogger().onMeasure(VMeasurePoint.fromSpecs(widthMeasureSpec, heightMeasureSpec))
         if (isVertical) {
             super.onMeasure(
                 MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST),
