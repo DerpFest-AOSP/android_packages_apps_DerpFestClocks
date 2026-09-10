@@ -33,3 +33,15 @@
     *** startRestartGroup(...);
     *** getApplier(...);
 }
+
+# Scene-container hosts clocks through ClockFaceLayout.elements. Those getters are only
+# called from SystemUI across the plugin classloader, so R8 cannot see the reads and
+# replaces getKey() with `return null`.
+-keep class com.android.systemui.customization.clocks.view.DefaultClockFaceLayout { *; }
+-keep class com.android.systemui.customization.clocks.view.DefaultClockFaceLayout$* { *; }
+-keep class org.derpfest.clocks.words.WordClockFaceLayout* { *; }
+-keep class org.derpfest.clocks.words.WordClockFaceLayout*$* { *; }
+-keep class * implements com.android.systemui.plugins.keyguard.ui.composable.elements.BaseLockscreenElement { *; }
+-keep class * implements com.android.systemui.plugins.keyguard.ui.composable.elements.LockscreenElement { *; }
+-keep class * implements com.android.systemui.plugins.keyguard.ui.composable.elements.MovableLockscreenElement { *; }
+-keep class * implements com.android.systemui.plugins.keyguard.ui.clocks.ClockFaceLayout { *; }
