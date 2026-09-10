@@ -59,12 +59,11 @@ java_defaults {
     system_ext_specific: true,
     privileged: true,
     certificate: "platform",
-    // Dex shrinking only: the artwork is referenced by name from the JSON designs (via
-    // Resources.getIdentifier), which the resource shrinker cannot see.
+    // Do not shrink. R8 cannot see SystemUI reading ClockFaceLayout.elements / getKey()
+    // across the plugin classloader and will stub getKey() to null, which hides the
+    // face when scene_container is on.
     optimize: {
-        enabled: true,
-        shrink_resources: false,
-        proguard_flags_files: ["proguard.flags"],
+        enabled: false,
     },
 }
 
