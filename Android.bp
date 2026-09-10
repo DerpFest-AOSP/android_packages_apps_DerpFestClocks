@@ -42,7 +42,14 @@ android_library {
         "gson",
         "monet",
     ],
-    kotlincflags: ["-Xjvm-default=all"],
+    kotlincflags: [
+        "-Xjvm-default=all",
+        // The device's SystemUI is built with Compose sourceInformation off, so R8 drops
+        // ComposerKt.sourceInformationMarkerStart from its runtime. A plugin runs against the
+        // host's Compose (parent classloader wins), so emitting those markers here would
+        // NoSuchMethodError at composition. Match the host and don't emit them.
+        "-P plugin:androidx.compose.compiler.plugins.kotlin:sourceInformation=false",
+    ],
     min_sdk_version: "current",
     platform_apis: true,
     system_ext_specific: true,
@@ -53,7 +60,14 @@ java_defaults {
     use_resource_processor: true,
     libs: ["SystemUIPluginLib"],
     static_libs: ["DerpFestClocksEngine"],
-    kotlincflags: ["-Xjvm-default=all"],
+    kotlincflags: [
+        "-Xjvm-default=all",
+        // The device's SystemUI is built with Compose sourceInformation off, so R8 drops
+        // ComposerKt.sourceInformationMarkerStart from its runtime. A plugin runs against the
+        // host's Compose (parent classloader wins), so emitting those markers here would
+        // NoSuchMethodError at composition. Match the host and don't emit them.
+        "-P plugin:androidx.compose.compiler.plugins.kotlin:sourceInformation=false",
+    ],
     min_sdk_version: "current",
     platform_apis: true,
     system_ext_specific: true,
