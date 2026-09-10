@@ -1,27 +1,13 @@
 /*
- * Copyright (C) 2026 FundamentalOS
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
- * except in compliance with the License. You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the
- * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.
+ * SPDX-FileCopyrightText: FundamentalOS
+ * SPDX-FileCopyrightText: DerpFest AOSP
+ * SPDX-License-Identifier: Apache-2.0
  */
 package org.derpfest.clocks.words
 
 import android.content.Context
 import android.content.res.Resources
 import android.view.View
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.constraintlayout.widget.ConstraintSet.BOTTOM
 import androidx.constraintlayout.widget.ConstraintSet.END
@@ -29,90 +15,26 @@ import androidx.constraintlayout.widget.ConstraintSet.PARENT_ID
 import androidx.constraintlayout.widget.ConstraintSet.START
 import androidx.constraintlayout.widget.ConstraintSet.TOP
 import androidx.constraintlayout.widget.ConstraintSet.WRAP_CONTENT
-import com.android.compose.animation.scene.ElementContentScope
-import com.android.compose.animation.scene.ElementKey
-import com.android.compose.animation.scene.MovableElementContentScope
 import org.derpfest.clocks.AssetLoader
 import com.android.systemui.customization.clocks.view.DefaultClockFaceLayout
 import com.android.systemui.customization.clocks.R as clocksR
 import com.android.systemui.customization.clocks.utils.ContextUtils.getSafeStatusBarHeight
 import com.android.systemui.plugins.keyguard.ui.clocks.AodClockBurnInModel
-import com.android.systemui.plugins.keyguard.ui.clocks.ClockFaceLayout
 import com.android.systemui.plugins.keyguard.ui.clocks.ClockPreviewConfig
 import com.android.systemui.plugins.keyguard.ui.clocks.ClockViewIds
-import com.android.systemui.plugins.keyguard.ui.composable.elements.BaseLockscreenElement
-import com.android.systemui.plugins.keyguard.ui.composable.elements.BaseLockscreenElement.ElementSource
-import com.android.systemui.plugins.keyguard.ui.composable.elements.LockscreenElement
-import com.android.systemui.plugins.keyguard.ui.composable.elements.LockscreenElementKeys
-import com.android.systemui.plugins.keyguard.ui.composable.elements.LockscreenScope
-import com.android.systemui.plugins.keyguard.ui.composable.elements.MovableLockscreenElement
 import kotlin.math.roundToInt
 
 /**
  * Pins the large word clock to the start of the lockscreen, a fixed distance below the keyguard's
- * small clock guideline. The keyguard hangs the date row and the smartspace off the clock
- * container, so they follow below the words.
+ * small clock guideline. Scene-container hosts [Clock.Large] through
+ * [DefaultClockFaceLayout];
  */
 class WordClockFaceLayoutLarge(
-    val view: WordClockViewLarge,
+    view: WordClockViewLarge,
     private val assets: AssetLoader,
     private val context: Context,
     private val resources: Resources = context.resources,
-) : ClockFaceLayout {
-    private val density: Float
-        get() = resources.displayMetrics.density
-
-    @Deprecated("Unsupported with flexiglass. Move to composables.")
-    override val views: List<View>
-        get() = listOf(view)
-
-    override val elements: List<BaseLockscreenElement> by lazy { listOf(LargeWordsElement(), LargeWordRegionElement()) }
-
-    private inner class LargeWordsElement : MovableLockscreenElement {
-        override val key = LockscreenElementKeys.Clock.Large
-        override val context: Context = view.context
-        override val source = ElementSource.DYNAMIC
-
-        @Composable
-        override fun LockscreenScope<MovableElementContentScope>.LockscreenElement() {
-            DefaultClockFaceLayout.ClockView(view, Modifier.wrapContentSize().burnInAware(isClock = true))
-        }
-    }
-
-    /** The words, then the date / weather row and the smartspace cards. */
-    private inner class LargeWordRegionElement : LockscreenElement {
-        override val key: ElementKey = LockscreenElementKeys.Region.Clock.Large
-        override val context: Context = view.context
-        override val source = ElementSource.DYNAMIC
-
-        @Composable
-        override fun LockscreenScope<ElementContentScope>.LockscreenElement() {
-            val padding = dimensionResource(clocksR.dimen.clock_padding_start)
-            Layout(
-                content = {
-                    LockscreenElement(LockscreenElementKeys.Clock.Large, Modifier.padding(start = padding + START_INSET_DP.dp))
-                    LockscreenElement(LockscreenElementKeys.Smartspace.DWA.LargeClock.Above, Modifier.padding(horizontal = padding))
-                    LockscreenElement(
-                        LockscreenElementKeys.Smartspace.Cards,
-                        Modifier.heightIn(min = dimensionResource(clocksR.dimen.enhanced_smartspace_height)),
-                    )
-                }
-            ) { measurables, constraints ->
-                check(measurables.size == 3)
-                val childConstraints = constraints.copy(minWidth = 0, minHeight = 0)
-                val words = measurables[0].measure(childConstraints)
-                val dateWeather = measurables[1].measure(childConstraints)
-                val smartspace = measurables[2].measure(childConstraints)
-                val top = topOffset(resources)
-                layout(constraints.maxWidth, constraints.maxHeight) {
-                    words.placeRelative(0, top)
-                    dateWeather.placeRelative(0, top + words.measuredHeight)
-                    smartspace.placeRelative(0, top + words.measuredHeight + dateWeather.measuredHeight)
-                }
-            }
-        }
-    }
-
+) : DefaultClockFaceLayout(view) {
     @Deprecated("Unsupported with flexiglass. Move to composables.")
     override fun applyConstraints(constraints: ConstraintSet): ConstraintSet {
         val large = ClockViewIds.LOCKSCREEN_CLOCK_VIEW_LARGE

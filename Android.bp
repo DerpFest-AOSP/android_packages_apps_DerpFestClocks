@@ -89,11 +89,4 @@ android_app {
     srcs: ["clocks/words/src/**/*.kt"],
     resource_dirs: ["clocks/words/res"],
     asset_dirs: ["clocks/words/assets"],
-    // The face layout is composable; a direct compose dependency turns the compiler plugin on.
-    static_libs: [
-        "androidx.compose.runtime_runtime",
-        "androidx.compose.ui_ui",
-        "androidx.compose.foundation_foundation-layout",
-        "PlatformComposeSceneTransitionLayout",
-    ],
 }
